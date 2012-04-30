@@ -36,27 +36,39 @@ def home(request):
 
 
 def run_fsl(request, file_name):
+    """ Runs FSL Scripts """
     if file_name[-4:] != ".nii":
         raise NameError('Filename incorrect!')
 
     media_root = settings.MEDIA_ROOT
+    infile = file_name[:-4] + "_in.nii"
+    nii_file = os.path.join(media_root, "uploads", file_name)
 
-    infile = file_name
-
-    nii_file = os.path.join(media_root, "uploads", infile)
-    print nii_file
     # Creates directory to hold new files, deletes dir if already exists
-    new_dir = os.path.join(media_root, file_name)
-    if os.path.isdir(new_dir):
-        shutil.rmtree(new_dir)
-    os.mkdir(new_dir)
-    nii_outfile = os.path.join(new_dir, file_name[:-4] + "_out.nii")
+    outfile_dir = os.path.join(media_root, file_name)
+    if os.path.isdir(outfile_dir):
+        shutil.rmtree(outfile_dir)
+    os.mkdir(outfile_dir)
+    # Dir for uploaded file
+    infile_dir = os.path.join(media_root, infile)
+    if os.path.isdir(infile_dir):
+        shutil.rmtree(infile_dir)
+    os.mkdir(infile_dir)
+    shutil.copy(nii_file, infile_dir)
+    nii_infile = os.path.join(infile_dir, file_name)
+
+    nii_outfile = os.path.join(outfile_dir, file_name[:-4] + "_out.nii")
 
     # Runs FSL
-    run_bet(nii_file, nii_outfile)
+    print infile_dir
+    print os.path.join(infile_dir)
+    print os.path.join(infile_dir, nii_file)
+    print nii_infile
+    run_bet(nii_infile, nii_outfile)
     extract_gz(nii_outfile + ".gz")
     sctfile = os.path.join(os.getcwd(), "fsl", "nii2jpg.sct")
     nii2jpg(nii_outfile, sctfile)
+    nii2jpg(nii_infile, sctfile)
 
     # Displys output images, starting with first one
     return disp_fsl(request, file_name, 1)
@@ -66,16 +78,30 @@ def disp_fsl(request, file_name, num):
         raise NameError('Filename incorrect!')
 
     media_root = settings.MEDIA_ROOT
-    new_dir = os.path.join(media_root, file_name)
-    print new_dir
-    # Gets lits of images from the proper media subdir
-    sorted_imgs = [img[-7:-4] for img in os.listdir(new_dir) \
+
+    # Gets list of processed images from the proper media subdir
+    outfile_dir = os.path.join(media_root, file_name)
+    sorted_imgs = [img[-7:-4] for img in os.listdir(outfile_dir) \
                        if img[-4:] == ".jpg"]
     sorted_imgs.sort()
-    print sorted_imgs
+
+    # Gets list of original images from the proper media subdir
+    infile = file_name[:-4] + "_in.nii"
+    infile_dir = os.path.join(media_root, infile)
+    in_imgs = [img[-7:-4] for img in os.listdir(infile_dir) \
+                       if img[-4:] == ".jpg"]
+    in_imgs.sort()
+
     # Displays the correct one
     imgfile = file_name[:-4] + "_out%03d.jpg" % int(num)
     imgurl = os.path.join(settings.MEDIA_URL, file_name, imgfile)
 
+    # Displays the correct one
+    in_img_file = file_name[:-4] + "%03d.jpg" % int(num)
+    inurl = os.path.join(settings.MEDIA_URL, infile, in_img_file)
+
     return render_to_response('fsl/display.html', \
-                                  {'imgname': imgurl, 'filelist': sorted_imgs})
+                                  {'imgname': imgurl, \
+                                       'filelist': sorted_imgs, \
+                                       'imgin': inurl, \
+                                       'infiles': in_imgs})
