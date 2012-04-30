@@ -1,0 +1,9 @@
+Welcome to FSLOnline!
+<br>
+Here are the images you uploaded!
+<br>
+<img src="{{ imgname }}" />
+<br>
+{% for file in filelist %}
+  <a href="{{ file }}">{{ file }}</a>
+{% endfor %}
