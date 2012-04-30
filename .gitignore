@@ -1,0 +1,6 @@
+*~
+*.log
+*.pot
+*.pyc
+/fslonline/media/*
+local_settings.py
