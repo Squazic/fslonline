@@ -17,3 +17,6 @@ and then make sure the following is in your `.bashrc`
     PATH=${FSLDIR}/bin:${PATH}
     export FSLDIR PATH
     
+To run the program, start a django server with `python manage.py
+runserver` in the root fslonline directory. Navigate to
+[http://127.0.0.1:8000/fsl] to begin.

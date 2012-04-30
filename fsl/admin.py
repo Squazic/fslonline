@@ -1,4 +1,4 @@
-from fsl.models import File
+from fsl.models import UploadFile
 from django.contrib import admin
 
-admin.site.register(File)
+admin.site.register(UploadFile)

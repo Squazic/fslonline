@@ -1,0 +1,13 @@
+﻿Welcome to FSLOnline!
+
+<p>Please submit a file to be processed.</p>
+
+
+<form action="/fsl/" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	{{ form.non_field_errors }}
+	{{ form.file_sub.label_tag }}
+	{{ form.file_sub.errors }}
+	{{ form.file_sub }}
+	<input type="submit" value="upload" />
+</form>

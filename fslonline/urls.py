@@ -14,9 +14,9 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^fsl/$', 'fsl.views.index'),
-    url(r'^fsl/(?P<file_name>\w+)/$', 'fsl.views.run_fsl'),
-    url(r'^fsl/(?P<file_name>\w+)/(?P<num>\d+)$', 'fsl.views.disp_fsl'),
+    url(r'^fsl/$', 'fsl.views.home'),
+    url(r'^fsl/(?P<file_name>[a-zA-Z0-9\._]+)/$', 'fsl.views.run_fsl'),
+    url(r'^fsl/(?P<file_name>[a-zA-Z0-9\._]+)/(?P<num>\d+)$', 'fsl.views.disp_fsl'),
     url(r'^admin/', include(admin.site.urls)),
 
     
